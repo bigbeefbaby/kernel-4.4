@@ -47,6 +47,10 @@ LCM_DRIVER *lcm_driver_list[] = {
 	&otm1285a_hd720_dsi_vdo_tm_lcm_drv,
 #endif
 
+#if defined(HCT_RM67120_DSI_VDO_HD_AUO_55_GX)
+	&hct_rm67120_dsi_vdo_hd_auo_55_gx,
+#endif
+
 #if defined(NT35595_FHD_DSI_CMD_TRULY_8163)
 	&nt35595_fhd_dsi_cmd_truly_8163_lcm_drv,
 #endif
