@@ -4850,7 +4850,7 @@
 
 	led@6 {
 		compatible = "mediatek,lcd-backlight";
-		led_mode = <0x04>;
+		led_mode = <0x05>;
 		data = <0x01>;
 		pwm_config = <0x00 0x00 0x00 0x00 0x00>;
 	};
