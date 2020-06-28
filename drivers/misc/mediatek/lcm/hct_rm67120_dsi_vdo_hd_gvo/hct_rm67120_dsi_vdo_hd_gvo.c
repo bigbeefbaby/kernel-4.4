@@ -65,6 +65,7 @@ static LCM_UTIL_FUNCS lcm_util = {0};
 #define read_reg(cmd)											lcm_util.dsi_dcs_read_lcm_reg(cmd)
 #define read_reg_v2(cmd, buffer, buffer_size)               lcm_util.dsi_dcs_read_lcm_reg_v2(cmd, buffer, buffer_size)
 #define set_gpio_lcd_enp(cmd) 								lcm_util.set_gpio_lcd_enp_bias(cmd)
+#define set_gpio_lcd_enn(cmd) 								lcm_util.set_gpio_lcd_enn_bias(cmd)
 
 #define   LCM_DSI_CMD_MODE							0
 struct LCM_setting_table {
@@ -130,7 +131,7 @@ static struct LCM_setting_table lcm_initialization_setting[] = {
 
 static struct LCM_setting_table lcm_backlight_level_setting[] = {
 	{0x51, 1, {0xFF}},
-	{REGFLAG_END_OF_TABLE, 0x00, {0x00}}
+	//{REGFLAG_END_OF_TABLE, 0x00, {0x00}}
 };
 
 static void push_table(struct LCM_setting_table *table, unsigned int count, unsigned char force_update)
@@ -208,9 +209,8 @@ static void lcm_init(void)
 	MDELAY(10);
 	set_gpio_lcd_enp(1);
 	MDELAY(10);
-
-	//MDELAY(10);
-
+    set_gpio_lcd_enn(1);
+	MDELAY(10);
 	SET_RESET_PIN(1);
 	MDELAY(20);
 	push_table(lcm_initialization_setting,sizeof(lcm_initialization_setting) /sizeof(struct LCM_setting_table), 1);
@@ -240,13 +240,10 @@ static void lcm_suspend(void)
 #endif
 }
 
-static int set_backlight_flag=0;
 
 static void lcm_resume(void)
 {   
 	lcm_init();
-	set_backlight_flag = 1;
-	MDELAY(20);
 }
 
 
@@ -257,15 +254,9 @@ static unsigned int lcm_compare_id(void)
 
 static void lcm_setbacklight(unsigned int level)
 {
-	//unsigned int data_array[16];
 	unsigned int default_level = 50;
 	unsigned int mapped_level = 0;
-	//	printk("HCT_lcm_setbacklight level = %d\n", level);
-#ifdef BUILD_LK
-	printf("HCT_lcm_setbacklight level = %d\n", level);
-#else
 	printk("HCT_lcm_setbacklight level = %d\n", level);
-#endif
 
 	if(level > 255)
 		level = 255;
@@ -275,16 +266,9 @@ static void lcm_setbacklight(unsigned int level)
 	else
 		mapped_level=0;
 
-	if(set_backlight_flag==1)	
-	{
-		lcm_backlight_level_setting[0].para_list[0] = 0;
-		push_table(lcm_backlight_level_setting, sizeof(lcm_backlight_level_setting) / sizeof(struct LCM_setting_table), 1);
-		set_backlight_flag=0;
-		MDELAY(50);
-	}
 	lcm_backlight_level_setting[0].para_list[0] = mapped_level;
+	MDELAY(16);
 	push_table(lcm_backlight_level_setting, sizeof(lcm_backlight_level_setting) / sizeof(struct LCM_setting_table), 1);
-
 }
 
 // ---------------------------------------------------------------------------
