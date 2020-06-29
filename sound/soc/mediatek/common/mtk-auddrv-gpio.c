@@ -194,7 +194,7 @@ void AudDrv_GPIO_probe(void *dev)
 	}
 	//[yuwenjiao] add start for smartpa I2S GPIO.
 	pr_err("AudDrv_GPIO_SMARTPA_Select!\n");
-	AudDrv_GPIO_SMARTPA_Select(true);
+	//AudDrv_GPIO_SMARTPA_Select(true);
 	//[yuwenjiao] add end
 #endif
 }
