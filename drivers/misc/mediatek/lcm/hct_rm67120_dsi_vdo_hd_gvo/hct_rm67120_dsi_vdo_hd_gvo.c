@@ -126,7 +126,7 @@ static struct LCM_setting_table lcm_initialization_setting[] = {
     { 0x11, 0x01, {0x00}},
     { REGFLAG_DELAY, 100,{0x00}},
     { 0x29, 0x01,{0x00}},
-    { REGFLAG_END_OF_TABLE,0x00,{0x00}}
+    //{ REGFLAG_END_OF_TABLE,0x00,{0x00}}
 };
 
 static struct LCM_setting_table lcm_backlight_level_setting[] = {
@@ -188,8 +188,6 @@ static void lcm_get_params(LCM_PARAMS * params)
   params->dsi.ssc_disable = 1;
   params->dsi.clk_lp_per_line_enable = 1;
   params->dsi.esd_check_enable = 0;
-  params->dsi.customization_esd_check_enable = 0;
-  params->dsi.lcm_esd_check_table[0].count = 1;
   params->width = 720;
   params->height = 1280;
   params->dsi.packet_size = 256;
@@ -198,9 +196,14 @@ static void lcm_get_params(LCM_PARAMS * params)
   params->dsi.horizontal_sync_active = 8;
   params->dsi.horizontal_active_pixel = 720;
   params->dsi.PLL_CLOCK = 220;
+
+#ifdef ESD_CHECK
+  params->dsi.customization_esd_check_enable = 0;
+  params->dsi.lcm_esd_check_table[0].count = 1;
+  params->dsi.esd_check_enable = 0;
   params->dsi.lcm_esd_check_table[0].cmd = 10;
   params->dsi.lcm_esd_check_table[0].para_list[0] = 156;
-
+ #endif
 }
 
 static void lcm_init(void)
@@ -240,10 +243,13 @@ static void lcm_suspend(void)
 #endif
 }
 
+static int set_backlight_flag=0;
 
 static void lcm_resume(void)
 {   
 	lcm_init();
+	set_backlight_flag=0;
+	MDELAY(20);
 }
 
 
@@ -265,6 +271,14 @@ static void lcm_setbacklight(unsigned int level)
 		mapped_level = default_level+(level)*(255-default_level)/(255);
 	else
 		mapped_level=0;
+
+	if(set_backlight_flag==1)	
+	{
+		lcm_backlight_level_setting[0].para_list[0] = 0;
+		push_table(lcm_backlight_level_setting, sizeof(lcm_backlight_level_setting) / sizeof(struct LCM_setting_table), 1);
+		set_backlight_flag=0;
+		MDELAY(50);
+	}
 
 	lcm_backlight_level_setting[0].para_list[0] = mapped_level;
 	MDELAY(16);
