@@ -34,6 +34,9 @@ LCM_DSI_MODE_CON lcm_dsi_mode;
 #endif
 
 LCM_DRIVER *lcm_driver_list[] = {
+#if defined(HCT_RM67120_DSI_VDO_HD_GVO)
+        &hct_rm67120_dsi_vdo_hd_gvo,
+#endif
 #if defined(TD4310_TFT60_HXGD_LFHD)
 	&td4310_tft60_hxgd_lfhd_lcm_drv,
 #endif
