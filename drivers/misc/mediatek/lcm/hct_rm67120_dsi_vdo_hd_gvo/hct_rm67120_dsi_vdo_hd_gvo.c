@@ -403,7 +403,7 @@ static unsigned int lcm_compare_id(void)
 
 }
 
-static void lcm_setbacklight(unsigned int level)
+static void lcm_setbacklight_cmdq(void *handle, unsigned int level)
 {
 	//unsigned int data_array[16];
     unsigned int default_level = 50;
@@ -441,6 +441,6 @@ LCM_DRIVER hct_rm67120_dsi_vdo_hd_gvo =
 	.suspend        = lcm_suspend,
 	.resume         = lcm_resume,	
 	.compare_id     = lcm_compare_id,
-	.set_backlight = lcm_setbacklight,
+	.set_backlight_cmdq = lcm_setbacklight_cmdq,
 };
 
